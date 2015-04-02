@@ -19,9 +19,9 @@ enum HTTPRequestContentType {
 }
 
 struct HTTPHelper {
-  static let API_AUTH_NAME = "<YOUR_HEROKU_API_ADMIN_NAME>"
-  static let API_AUTH_PASSWORD = "<YOUR_HEROKU_API_PASSWORD>"
-  static let BASE_URL = "https://XXXXX-XXX-1234.herokuapp.com/api"
+  static let API_AUTH_NAME = "xcode366"
+  static let API_AUTH_PASSWORD = "123"
+  static let BASE_URL = "https://blooming-hollows-5882.herokuapp.com/api"
   
   func buildRequest(path: String!, method: String, authType: HTTPRequestAuthType,
     requestContentType: HTTPRequestContentType = HTTPRequestContentType.HTTPJsonContent, requestBoundary:NSString = "") -> NSMutableURLRequest {

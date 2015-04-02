@@ -115,16 +115,26 @@ class ViewController: UIViewController {
   
   @IBAction func signupBtnTapped(sender: AnyObject) {
     // Code to hide the keyboards for text fields
-    if self.signupNameTextField.isFirstResponder() {
-      self.signupNameTextField.resignFirstResponder()
+    if self.signupNameTextField.isFirstResponder(){
+        self.signupNameTextField.resignFirstResponder()
     }
     
-    if self.signupEmailTextField.isFirstResponder() {
-      self.signupEmailTextField.resignFirstResponder()
+    if self.signupEmailTextField.isFirstResponder(){
+        self.signupEmailTextField.resignFirstResponder()
     }
     
-    if self.signupPasswordTextField.isFirstResponder() {
-      self.signupPasswordTextField.resignFirstResponder()
+    if self.signupPasswordTextField.isFirstResponder(){
+        self.signupPasswordTextField.resignFirstResponder()
+    }
+    
+    // start activity indicator 
+    self.activityIndicatorView.hidden = false
+    
+    // validate presence of all required parameters
+    if countElements(self.signupNameTextField.text) > 0 && countElements(self.signupEmailTextField.text) > 0 && countElements(self.signupPasswordTextField.text) > 0 {
+        makeSignUpRequest(self.signupNameTextField.text, userEmail: self.signupEmailTextField.text, userPassword: self.signupPasswordTextField.text);
+    } else {
+        self.displayAlertMessage("Parameter Required", alertDescription: "Some of the required parameters are missing")
     }
   }
   
@@ -146,6 +156,27 @@ class ViewController: UIViewController {
   }
   
   func makeSignUpRequest(userName:String, userEmail:String, userPassword:String) {
+    // 1. Create HTTP request and set set request header
+    let httpRequest = httpHelper.buildRequest("signup", method: "POST", authType: HTTPRequestAuthType.HTTPBasicAuth);
+    
+    // 2. Password is encrypted with the API key
+    let encrypted_password = AESCrypt.encrypt(userPassword, password: HTTPHelper.API_AUTH_PASSWORD)
+    
+    // 3. Send the request body
+    httpRequest.HTTPBody = "{\"full_name\":\"\(userName)\",\"email\":\"\(userEmail)\",\"password\":\"\(encrypted_password)\"}".dataUsingEncoding(NSUTF8StringEncoding)
+    
+    // 4. Send the request
+    httpHelper.sendRequest(httpRequest, completion: {(data: NSData!, error:NSError!) in
+        if error != nil{
+            let errorMessage = self.httpHelper.getErrorMessage(error)
+            self.displayAlertMessage("Error", alertDescription: errorMessage)
+            
+            return
+        }
+        
+        self.displaSigninView()
+        self.displayAlertMessage("Success", alertDescription: "Account has been created")
+    })
   }
   
   func makeSignInRequest(userEmail:String, userPassword:String) {   
